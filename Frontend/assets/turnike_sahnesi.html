@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>3D Turnike Sahnesi</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            /* Ana uygulamanın karanlık temasıyla birebir uyumlu arka plan */
+            background: radial-gradient(circle at center, #1E293B 0%, #020617 100%);
+            touch-action: none;
+        }
+        canvas {
+            display: block;
+            width: 100vw;
+            height: 100vh;
+        }
+    </style>
+    <!-- 3D ve Animasyon Kütüphaneleri -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+</head>
+<body>
+
+<script>
+    let scene, camera, renderer;
+    let leftFlap, rightFlap, card, ledScreen, glowLight;
+    let cardFloating = true;
+
+    function init() {
+        // 1. SAHNE VE KAMERA
+        scene = new THREE.Scene();
+        camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 100);
+        // Kamerayı sağ üstten turnikeye bakacak şekilde açılı yerleştiriyoruz
+        camera.position.set(0, 3.5, 4.5);
+        camera.lookAt(0, 0.5, 0);
+
+        // 2. RENDERER
+        renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setPixelRatio(window.devicePixelRatio);
+        document.body.appendChild(renderer.domElement);
+
+        // 3. IŞIKLANDIRMA (Gerçekçi metal ve cam yansımaları için)
+        const ambientLight = new THREE.AmbientLight(0xffffff, 0.4);
+        scene.add(ambientLight);
+
+        const dirLight = new THREE.DirectionalLight(0xffffff, 0.8);
+        dirLight.position.set(5, 10, 5);
+        scene.add(dirLight);
+
+        // Turnikenin üstünde yanan neon okuyucu ışığı
+        glowLight = new THREE.PointLight(0x4AC2B8, 2, 5);
+        glowLight.position.set(0.8, 1.5, 0.5);
+        scene.add(glowLight);
+
+        // 4. METRO TURNİKE KABİNLERİ (Sağ ve Sol gövde)
+        const cabinetGeo = new THREE.BoxGeometry(0.7, 1.4, 2.5);
+        const cabinetMat = new THREE.MeshStandardMaterial({
+            color: 0x111111,
+            metalness: 0.8,
+            roughness: 0.3
+        });
+
+        const leftCabinet = new THREE.Mesh(cabinetGeo, cabinetMat);
+        leftCabinet.position.set(-0.9, 0.7, 0);
+        scene.add(leftCabinet);
+
+        const rightCabinet = new THREE.Mesh(cabinetGeo, cabinetMat);
+        rightCabinet.position.set(0.9, 0.7, 0);
+        scene.add(rightCabinet);
+
+        // 5. CAM KANATLAR (Fütüristik Glassmorphism Efekti)
+        const flapGeo = new THREE.BoxGeometry(0.7, 0.6, 0.05);
+        const flapMat = new THREE.MeshPhysicalMaterial({
+            color: 0x4AC2B8,
+            metalness: 0.2,
+            roughness: 0.1,
+            transmission: 0.9, // Cam geçirgenliği
+            transparent: true,
+            opacity: 1
+        });
+
+        leftFlap = new THREE.Mesh(flapGeo, flapMat);
+        leftFlap.position.set(-0.45, 0.9, 0);
+        scene.add(leftFlap);
+
+        rightFlap = new THREE.Mesh(flapGeo, flapMat);
+        rightFlap.position.set(0.45, 0.9, 0);
+        scene.add(rightFlap);
+
+        // 6. KART OKUYUCU (Sağ kabinin üzerinde)
+        const readerGeo = new THREE.BoxGeometry(0.4, 0.05, 0.6);
+        const readerMat = new THREE.MeshStandardMaterial({ color: 0x050505 });
+        const reader = new THREE.Mesh(readerGeo, readerMat);
+        reader.position.set(0.8, 1.425, 0.5);
+        scene.add(reader);
+
+        // Okuyucu Ekranı / LED
+        const ledGeo = new THREE.BoxGeometry(0.3, 0.06, 0.4);
+        const ledMat = new THREE.MeshBasicMaterial({ color: 0x4AC2B8 });
+        ledScreen = new THREE.Mesh(ledGeo, ledMat);
+        ledScreen.position.set(0.8, 1.43, 0.5);
+        scene.add(ledScreen);
+
+        // 7. İZMİRİM KART (3D Model)
+        // Kart için özel bir texture (doku) çiziyoruz (Üstü lacivert, altı beyaz)
+        const canvas = document.createElement('canvas');
+        canvas.width = 256; canvas.height = 512;
+        const ctx = canvas.getContext('2d');
+        ctx.fillStyle = '#ffffff'; ctx.fillRect(0, 0, 256, 512);
+        ctx.fillStyle = '#101828'; ctx.fillRect(0, 0, 256, 150);
+        ctx.fillStyle = '#4AC2B8'; ctx.beginPath(); ctx.arc(128, 300, 60, 0, Math.PI * 2); ctx.fill();
+        const cardTex = new THREE.CanvasTexture(canvas);
+
+        const cardGeo = new THREE.BoxGeometry(0.35, 0.01, 0.55);
+        const cardMaterial = new THREE.MeshStandardMaterial({ map: cardTex, roughness: 0.4 });
+        card = new THREE.Mesh(cardGeo, cardMaterial);
+
+        // Kartı başlangıçta okuyucunun üstünde havada asılı bırakıyoruz
+        card.position.set(0.8, 2.2, 0.5);
+        card.rotation.x = Math.PI / 6; // Hafif açılı duruş
+        scene.add(card);
+
+        animate();
+    }
+
+    // Yavaşça yukarı aşağı süzülme (Idle Animasyonu)
+    function animate() {
+        requestAnimationFrame(animate);
+
+        if (cardFloating) {
+            const time = Date.now() * 0.003;
+            card.position.y = 2.2 + Math.sin(time) * 0.05;
+            card.rotation.z = Math.sin(time * 0.5) * 0.05;
+        }
+
+        renderer.render(scene, camera);
+    }
+
+    // ==========================================
+    // FLUTTER'DAN ÇAĞRILACAK ANA FONKSİYON
+    // ==========================================
+    window.gecisAnimasyonunuBaslat = function(basarili) {
+        cardFloating = false; // Süzülmeyi durdur
+
+        // 1. AŞAMA: Kart Okuyucuya Doğru İner (Tap)
+        gsap.to(card.position, {
+            y: 1.48,
+            duration: 0.3,
+            ease: "power2.in",
+            onComplete: () => {
+
+                // 2. AŞAMA: Okutma Sonucu
+                if (basarili) {
+                    // Işıkları Yeşile Çevir
+                    ledScreen.material.color.setHex(0x22c55e);
+                    glowLight.color.setHex(0x22c55e);
+
+                    // Cam Kapılar Yana Açılsın
+                    gsap.to(leftFlap.position, { x: -0.85, duration: 0.6, ease: "back.out(1.5)" });
+                    gsap.to(rightFlap.position, { x: 0.85, duration: 0.6, ease: "back.out(1.5)" });
+
+                    // Kamerayı hafif ileri it (İçeri girme hissi)
+                    gsap.to(camera.position, { z: 3.5, y: 3.0, duration: 1.5, ease: "power1.inOut" });
+
+                } else {
+                    // Işıkları Kırmızıya Çevir
+                    ledScreen.material.color.setHex(0xef4444);
+                    glowLight.color.setHex(0xef4444);
+
+                    // Kart titreme (Hata) efekti
+                    gsap.to(card.position, {
+                        x: 0.82, duration: 0.05, yoyo: true, repeat: 5
+                    });
+                }
+
+                // 3. AŞAMA: Kart Geri Çekilir ve Sistem Sıfırlanır (3 saniye sonra)
+                setTimeout(() => {
+                    // Kartı yukarı al
+                    gsap.to(card.position, { y: 2.2, x: 0.8, duration: 0.5, ease: "power2.out" });
+
+                    // Kapıları kapat (Açıksa)
+                    if (basarili) {
+                        gsap.to(leftFlap.position, { x: -0.45, duration: 0.6, ease: "power2.out" });
+                        gsap.to(rightFlap.position, { x: 0.45, duration: 0.6, ease: "power2.out" });
+                        gsap.to(camera.position, { z: 4.5, y: 3.5, duration: 1.5, ease: "power1.inOut" });
+                    }
+
+                    // Işıkları standart Neon Maviye döndür
+                    setTimeout(() => {
+                        ledScreen.material.color.setHex(0x4AC2B8);
+                        glowLight.color.setHex(0x4AC2B8);
+                        cardFloating = true; // Süzülme tekrar başlasın
+                    }, 500);
+
+                }, basarili ? 2500 : 1500);
+            }
+        });
+    }
+
+    // Ekran boyutu değiştiğinde 3D sahneyi ayarla
+    window.addEventListener('resize', () => {
+        camera.aspect = window.innerWidth / window.innerHeight;
+        camera.updateProjectionMatrix();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+    });
+
+    // Sahneyi Başlat
+    init();
+</script>
+
+</body>
+</html>

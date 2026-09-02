@@ -15,7 +15,8 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 builder.Services.AddSignalR();
 
 // 3. JWT Kimlik Doğrulama Ayarları
-var jwtKey = "SuperSecretKeyForIzmirimCardSystem2026!"; 
+// GÜVENLİK İÇİN ŞİFRE GİZLENDİ:
+var jwtKey = "BURAYA_EN_AZ_32_KARAKTERLIK_GIZLI_ANAHTAR_GELECEK"; 
 builder.Services.AddAuthentication(options =>
 {
     options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -46,11 +47,6 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
-
-// ==========================================
-// MİDDLEWARE (ARA KATMAN) BORU HATTI
-// (Sıralama çok önemlidir, değiştirilmemelidir)
-// ==========================================
 
 // ==========================================
 // MİDDLEWARE (ARA KATMAN) BORU HATTI

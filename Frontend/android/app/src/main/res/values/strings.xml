@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">İzmirim Kart Simülasyonu</string>
+    <string name="hce_desc">NFC Transit Ödeme Servisi</string>
+</resources>

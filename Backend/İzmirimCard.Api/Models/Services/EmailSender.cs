@@ -7,7 +7,7 @@ namespace IzmirimCard.Api.Services
     {
         // GMAIL HESAP BİLGİLERİN 
         private const string SenderEmail = "ycananoglu@gmail.com";
-        private const string AppPassword = "qxdhmnmrsocsbnkx"; // Gmail'den alacağın 16 haneli kod
+        private const string AppPassword = "Şifre"; // Gmail'den alacağın 16 haneli kod
 
         public static void SendOtpEmail(string toEmail, string otpCode)
         {

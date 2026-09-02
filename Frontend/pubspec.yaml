@@ -1,0 +1,71 @@
+name: nfc
+description: "A new Flutter project."
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.8.1
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  sqflite: ^2.3.0
+  path: ^1.9.0
+  cupertino_icons: ^1.0.8
+  flutter_inappwebview: ^6.0.0
+  http: ^1.6.0
+  shared_preferences: ^2.5.3
+  signalr_netcore: ^1.4.4
+  flutter_map: ^8.3.1
+  latlong2: ^0.10.1
+  url_launcher: ^6.3.2
+  flutter_nfc_kit: ^3.6.2
+  image_picker: ^1.2.1
+  easy_localization: ^3.0.8
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^5.0.0
+
+  # --- İKON VE SPLASH EKRANI İÇİN EKLENEN KÜTÜPHANELER ---
+  flutter_launcher_icons: ^0.13.1
+  flutter_native_splash: ^2.3.6
+
+flutter:
+  uses-material-design: true
+
+  # Asset yollarını tam buraya ekliyoruz (Boşluklara dikkat!)
+  assets:
+    - assets/turnike_sahnesi.html
+    - assets/bg.jpg
+    - assets/logo.png
+    - assets/profile.png
+    - assets/aa.jpg
+
+# ---------------------------------------------------
+# TELEFON MENÜSÜNDEKİ İKON AYARI (DÜZELTİLDİ)
+# ---------------------------------------------------
+flutter_launcher_icons:
+  android: true
+  ios: true
+  image_path: "assets/logo.png"
+  min_sdk_android: 21
+  # Beyaz yuvarlağı yok edip, logoyu kenarlara tam yaymak için:
+  adaptive_icon_background: "#070B14"
+  adaptive_icon_foreground: "assets/logo1.png"
+
+# ---------------------------------------------------
+# AÇILIŞ (SPLASH) EKRANI AYARI (DÜZELTİLDİ)
+# ---------------------------------------------------
+flutter_native_splash:
+  color: "#070B14"
+  image: "assets/aa.jpg" # Eski Androidler ve iOS için uzun görseli kullanır
+  android: true
+  ios: true
+  android_12:
+    # Android 12+ zorla yuvarlak kestiği için burada kare olan logoyu kullanıyoruz.
+    # Böylece "İZMİR" yazısı korkunç bir şekilde ortadan ikiye bölünmüyor!
+    image: "assets/logo.png"
+    color: "#070B14"
