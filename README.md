@@ -9,10 +9,6 @@ NFC Host Card Emulation · Yapay Zeka Destekli Şehir Rehberi · 3D Simülasyonl
 🌍 **Teknik Vitrin:** Bu depo, staj sürecim boyunca aldığım mühendislik kararlarının, sistem mimarisinin ve UI/UX tasarımının teknik bir gösterimi olarak kurgulanmıştır. Teknik mülakat süreçlerinde kod mimarisi üzerine yapacağımız incelemelere (code walkthroughs) açığım. 
 *(Not: API anahtarları, SMTP şifreleri ve veritabanı bağlantı dizeleri gibi hassas veriler siber güvenlik politikaları gereği projeden temizlenmiştir.)*
 
-## 📸 Ekran Görüntüleri
-
-*(Ekran görüntülerini GitHub editörüne sürükleyip bırakarak yükleyin ve oluşturulan bağlantıları buraya yapıştırın.)*
-
 ## 🧭 Bu Proje Nedir?
 
 İzmirim NFC Simülatörü, fiziksel toplu taşıma kartlarını güvenli mobil cüzdanlara dönüştüren uçtan uca (full-stack) bir mobil platformdur. Basit bir ödeme uygulamasının ötesine geçerek; 3D turnike simülasyon ortamı ve bağlamın farkında olan bir yapay zeka asistanı entegrasyonu ile "Akıllı Şehir Rehberi" olarak işlev görür.
