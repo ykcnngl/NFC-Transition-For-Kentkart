@@ -62,30 +62,21 @@ The system processes real-time hardware signals using **Host Card Emulation (HCE
 
 ## 🧠 Hard Engineering Problems Solved
 
-**1. Hardware-Level NFC Interception**
-* **The Problem:** Modern Android devices prioritize Google Wallet or default banking apps when approaching an NFC reader, making custom transit card emulation difficult.
-* **The Solution:** Implemented a foreground Host Card Emulation (HCE) service in the Android Manifest (`android.nfc.cardemulation.host_apdu_service`) that listens for specific Application Protocol Data Unit (APDU) commands. This forces the OS to route the physical turnstile's NFC signal directly to the Flutter app's payload.
-
-**2. Multi-Device Session Hijacking (The "Force Logout" Protocol)**
-* **The Problem:** Users could potentially log into the same digital transit card from multiple devices simultaneously, leading to race conditions in balance deduction and security flaws.
-* **The Solution:** Integrated **SignalR WebSockets** to maintain a persistent full-duplex TCP connection. When a new login occurs, the backend identifies the previous `ConnectionId` associated with that user and emits a real-time `ForceLogout` event, instantly clearing the SharedPreferences and terminating the session on the old device.
-
-**3. Database Vulnerability in Public Networks**
-* **The Problem:** Exposing the PostgreSQL database port (5432) to the internet for backend connectivity poses severe risks of brute-force attacks and SQL injections.
-* **The Solution:** Utilized **Docker Containerization** with an isolated **Bridge Network**. The ASP.NET Core API and PostgreSQL database run in the same virtual network. The API accesses the database via an internal IP, keeping the database completely invisible and inaccessible from the outside world (Zero Trust Architecture).
-
-**4. 60 FPS 3D Rendering Without Native App Bloat**
-* **The Problem:** Rendering complex 3D turnstile animations directly in Flutter using native packages drastically increased the APK size and caused frame drops on low-end devices.
-* **The Solution:** Offloaded the heavy lifting to the GPU by writing the 3D scene in **Three.js** (WebGL) and injecting it into the app via a transparent, hardware-accelerated `InAppWebView`. This decoupled the rendering logic from the UI thread, ensuring smooth 60fps performance with minimal bundle size impact.
+| Engineering Challenge | Problem & Solution |
+| :--- | :--- |
+| 📳 **Hardware-Level NFC Interception** | **The Problem:** Modern Android devices prioritize Google Wallet or default banking apps when approaching an NFC reader, making custom transit card emulation difficult.<br><br>**The Solution:** Implemented a foreground Host Card Emulation (HCE) service in the Android Manifest (`android.nfc.cardemulation.host_apdu_service`) that listens for specific Application Protocol Data Unit (APDU) commands. This forces the OS to route the physical turnstile's NFC signal directly to the Flutter app's payload. |
+| ⚡ **Multi-Device Session Hijacking** | **The Problem:** Users could potentially log into the same digital transit card from multiple devices simultaneously, leading to race conditions in balance deduction and security flaws.<br><br>**The Solution:** Integrated **SignalR WebSockets** to maintain a persistent full-duplex TCP connection. When a new login occurs, the backend identifies the previous `ConnectionId` associated with that user and emits a real-time `ForceLogout` event, instantly clearing the SharedPreferences and terminating the session on the old device. |
+| 🛡️ **Database Vulnerability** | **The Problem:** Exposing the PostgreSQL database port (5432) to the internet for backend connectivity poses severe risks of brute-force attacks and SQL injections.<br><br>**The Solution:** Utilized **Docker Containerization** with an isolated **Bridge Network**. The ASP.NET Core API and PostgreSQL database run in the same virtual network. The API accesses the database via an internal IP, keeping the database completely invisible and inaccessible from the outside world (Zero Trust Architecture). |
+| 🧊 **60 FPS 3D Rendering** | **The Problem:** Rendering complex 3D turnstile animations directly in Flutter using native packages drastically increased the APK size and caused frame drops on low-end devices.<br><br>**The Solution:** Offloaded the heavy lifting to the GPU by writing the 3D scene in **Three.js** (WebGL) and injecting it into the app via a transparent, hardware-accelerated `InAppWebView`. This decoupled the rendering logic from the UI thread, ensuring smooth 60fps performance with minimal bundle size impact. |
 
 ## 🛠️ Full Tech Stack
 
 | Category | Technology |
 | :--- | :--- |
-| **Mobile Frontend** | Flutter, Dart, SharedPreferences |
-| **Hardware & UI** | NFC/HCE Android APIs, Three.js (WebGL), Glassmorphism |
-| **Backend API** | C# 8.0, ASP.NET Core, N-Tier Architecture |
-| **Real-Time & AI** | SignalR (WebSockets), Google Gemini AI API |
-| **Database** | PostgreSQL, Entity Framework Core (EF Core) |
-| **Security** | JWT Authentication, Bcrypt Hashing, Google SMTP (OTP) |
-| **Infrastructure** | Docker, Docker Bridge Networking |
+| 📱 **Mobile Frontend** | Flutter, Dart, SharedPreferences |
+| 🎛️ **Hardware & UI** | NFC/HCE Android APIs, Three.js (WebGL), Glassmorphism |
+| ⚙️ **Backend API** | C# 8.0, ASP.NET Core, N-Tier Architecture |
+| 📡 **Real-Time & AI** | SignalR (WebSockets), Google Gemini AI API |
+| 🗄️ **Database** | PostgreSQL, Entity Framework Core (EF Core) |
+| 🔐 **Security** | JWT Authentication, Bcrypt Hashing, Google SMTP (OTP) |
+| ☁️ **Infrastructure** | Docker, Docker Bridge Networking |
